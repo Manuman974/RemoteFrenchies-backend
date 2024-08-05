@@ -9,14 +9,17 @@ const bcrypt = require('bcrypt');
 
 
 router.post('/signup', (req, res) => {
-  if (!checkBody(req.body, ['firstname', 'lastname', 'job', 'business','city', 'e_mail', 'password'])) {
+  
+  if (!checkBody(req.body, ['firstname', 'lastname', 'job', 'business','main_address', 'e_mail', 'password'])) { console.log(req.body, ['firstname', 'lastname', 'job', 'business','main_address', 'e_mail', 'password'])
     res.json({ result: false, error: 'Missing or empty fields' });
-    return;
+    console.log(signup)
+    return 
   }
 
   // route ajout nouvel utilisateur page signup
-  User.findOne({ firstname: req.body.firstname, lastname: req.body.lastname, job: req.body.job, business: req.body.business, city: req.body.city, e_mail: req.body.e_mail }).then(data => {
+  User.findOne({ firstname: req.body.firstname, lastname: req.body.lastname, job: req.body.job, business: req.body.business, main_address: {city: req.body.main_address}, e_mail: req.body.e_mail }).then(data => {
     if (data === null) {
+      console.log(data);
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       const newUser = new User({
@@ -24,7 +27,7 @@ router.post('/signup', (req, res) => {
         lastname: req.body.lastname,
         job: req.body.job,
         business: req.body.business,
-        city: req.body.city,
+        main_address: { city:req.body.main_address },
         e_mail: req.body.e_mail,
         password: hash,
         token: uid2(32),
@@ -40,5 +43,20 @@ router.post('/signup', (req, res) => {
     }
   });
 });
+
+// router.post('/signin', (req, res) => {
+//   if (!checkBody(req.body, ['username', 'password'])) {
+//     res.json({ result: false, error: 'Missing or empty fields' });
+//     return;
+//   }
+
+//   User.findOne({ username: req.body.username }).then(data => {
+//     if (data && bcrypt.compareSync(req.body.password, data.password)) {
+//       res.json({ result: true, token: data.token });
+//     } else {
+//       res.json({ result: false, error: 'User not found or wrong password' });
+//     }
+//   });
+// });
 
 module.exports = router;

@@ -21,33 +21,20 @@ const userSchema = mongoose.Schema({
   lastname: String,
   job: String,
   business: String,
-  phone_number: String,
+  // phone_number: String,
   e_mail: String,
-  profile_picture: String,
+  // profile_picture: String,
   password: String,
   token: String,
   main_address: addressSchema,
-  on_boarding: on_boardingSchema,
-  proposition : { type: mongoose.Schema.Types.ObjectId, ref: 'propositions' },
-  discussion: { type: mongoose.Schema.Types.ObjectId, ref: 'discussions' },
-  blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blogs' },
+  // on_boarding: on_boardingSchema,
+  // proposition : { type: mongoose.Schema.Types.ObjectId, ref: 'propositions' },
+  // discussion: { type: mongoose.Schema.Types.ObjectId, ref: 'discussions' },
+  // blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blogs' },
   
 });
 
-// router.post('/signin', (req, res) => {
-//   if (!checkBody(req.body, ['username', 'password'])) {
-//     res.json({ result: false, error: 'Missing or empty fields' });
-//     return;
-//   }
 
-//   User.findOne({ username: req.body.username }).then(data => {
-//     if (data && bcrypt.compareSync(req.body.password, data.password)) {
-//       res.json({ result: true, token: data.token });
-//     } else {
-//       res.json({ result: false, error: 'User not found or wrong password' });
-//     }
-//   });
-// });
 
 
 
