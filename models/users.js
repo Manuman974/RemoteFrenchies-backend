@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const addressSchema = mongoose.Schema({
+  street: String,
+  city: String,
+ });
+
+ const on_boardingSchema = mongoose.Schema({
+  remote: Boolean,
+  hybride: Boolean,
+  interested_in_teleworking: Boolean,
+  encounter: Boolean,
+  share_skills: Boolean,
+  welcome_remoters: Boolean,
+  go_to_remoters: Boolean,
+  both: Boolean,
+});
+
 const userSchema = mongoose.Schema({
   firstname: String,
   lastname: String,
@@ -18,21 +34,11 @@ const userSchema = mongoose.Schema({
   
 });
 
-const addressSchema = mongoose.Schema({
-    street: String,
-    city: String,
-   });
 
-const on_boardingSchema = mongoose.Schema({
-    remote: Boolean,
-    hybride: Boolean,
-    interested_in_teleworking: Boolean,
-    encounter: Boolean,
-    share_skills: Boolean,
-    welcome_remoters: Boolean,
-    go_to_remoters: Boolean,
-    both: Boolean,
-});
+
+
+
+
 
 const User = mongoose.model('users', userSchema);
 
