@@ -60,46 +60,6 @@ router.post('/signin', (req, res) => {
   });
 });
 
-router.post('/on_boarding', (req, res) => {
-  const {
-    remote,
-    hybride,
-    interested_in_teleworking,
-    encounter,
-    share_skills,
-    share_hobbies,
-    welcome_remoters,
-    go_to_remoters,
-    both
-  } = req.body;
-  
-  User.findOne({ remote, hybride, interested_in_teleworking, encounter, share_skills, share_hobbies, welcome_remoters, go_to_remoters, both }).then(data => { console.log(data)
-    if (data === null) {
-
-      const newUser = new User({
-        
-        on_boarding: {
-          remote,
-          hybride,
-          interested_in_teleworking,
-          encounter,
-          share_skills,
-          share_hobbies,
-          welcome_remoters,
-          go_to_remoters,
-          both
-        }
-      });
-      newUser.save().then(() => {
-        res.json({ result: true, user: newUser });
-        console.log(data)
-      });
-
-    } else {
-      res.json({ result: false, error: 'Preference already exists' });
-    }
-  });
-});
 
 module.exports = router;
       
