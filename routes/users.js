@@ -12,8 +12,8 @@ router.post('/signup', (req, res) => {
   
   if (!checkBody(req.body, ['firstname', 'lastname', 'job', 'business','main_address', 'e_mail', 'password'])) { console.log(req.body, ['firstname', 'lastname', 'job', 'business','main_address', 'e_mail', 'password'])
     res.json({ result: false, error: 'Missing or empty fields' });
-    console.log(signup)
-    return 
+    //console.log(signup)
+    return; 
   }
 
   // route ajout nouvel utilisateur page signup
