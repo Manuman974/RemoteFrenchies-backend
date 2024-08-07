@@ -5,7 +5,7 @@ const User = require('../models/users');
 const Proposition = require('../models/proposition');
 
 router.post('/proposition', (req, res) => {
-    // Destructure the body for easier access
+    // Destructuration du code
     const {
         main_address,
         welcome_day,
@@ -14,57 +14,65 @@ router.post('/proposition', (req, res) => {
         coffee_tea,
         dedicated_office,
         other,
-        description
+        description,
+        userId
     } = req.body;
-    const userId = req.body.userId;
-   
-    // Check if a proposition already exists
-    Proposition.findOne({
-        'main_address.street': main_address.street, // Accès à un sous-champ
-        'proposition.welcome_day': welcome_day,
-        'proposition.reception_hours': reception_hours,
-        'proposition.fiber_connection': fiber_connection,
-        'proposition.coffee_tea': coffee_tea,
-        'proposition.dedicated_office': dedicated_office,
-        'proposition.other': other,
-        'proposition.description': description,
-        user: req.body.userId // Inclure l'utilisateur dans la vérification
+
     
-        
-    }).then(data => { 
+    // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
+    Proposition.findOne({
+        main_address: { street: req.body.main_address},
+        welcome_day,
+        reception_hours,
+        fiber_connection,
+        coffee_tea,
+        dedicated_office,
+        other,
+        description,
+        user: userId
+    })
+    .then(existingProposition => {
         console.log(req.body)
-        if (data === null) {
-            // Create a new proposition if none exists
+        if (existingProposition) {
+            // erreur si proposition existante
+            res.json({ result: false, error: 'Proposition already exists' });
+        } else {
+            // Creation nouvelle proposition
             const newProposition = new Proposition({
-                main_address: main_address,
-                proposition: {
-                    welcome_day: welcome_day,
-                    reception_hours: reception_hours,
-                    fiber_connection: fiber_connection,
-                    coffee_tea: coffee_tea,
-                    dedicated_office: dedicated_office,
-                    other: other,
-                    description: description
-                },
-                user: userId // Associer la proposition à l'utilisateur
-                
+                user: userId,
+                main_address: { street: main_address },
+                welcome_day,
+                reception_hours,
+                fiber_connection,
+                coffee_tea,
+                dedicated_office,
+                other,
+                description
             });
+
+            // Save nouvelle proposition
             newProposition.save()
-                .then(() => {
-                    
-                    res.json({ result: true, user: newProposition });
+                .then(savedProposition => {
+                    // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
+                    User.findByIdAndUpdate(userId, { $push: { propositions: savedProposition._id } })
+                        .then(() => {
+                            // nouvelle proposition saved
+                            res.json({ result: true, proposition: savedProposition });
+                        })
+                        
                 })
                 
-        } else {
-            
-            res.json({ result: false, error: 'Proposition already exists' });
         }
     })
-        
+    
 });
 
-        
-        
-        module.exports = router;
+module.exports = router;
+
 
         
+                
+                    
+                    
+                
+                
