@@ -6,14 +6,51 @@ const addressSchema = mongoose.Schema({
  });
 
  const on_boardingSchema = mongoose.Schema({
-  remote: Boolean,
-  hybride: Boolean,
-  interested_in_teleworking: Boolean,
-  encounter: Boolean,
-  share_skills: Boolean,
-  welcome_remoters: Boolean,
-  go_to_remoters: Boolean,
-  both: Boolean,
+  remote: {
+    type: Boolean,
+    
+    default: false 
+  },
+  hybride: {
+    type: Boolean,
+    
+    default: false
+  },
+  interested_in_teleworking: {
+    type: Boolean,
+    
+    default: false
+  },
+  encounter: {
+    type: Boolean,
+    
+    default: false
+  },
+  share_skills: {
+    type: Boolean,
+    
+    default: false
+  },
+  share_hobbies: {
+    type: Boolean,
+    
+    default: false
+  },
+  welcome_remoters: {
+    type: Boolean,
+    
+    default: false
+  },
+  go_to_remoters: {
+    type: Boolean,
+    
+    default: false
+  },
+  both: {
+    type: Boolean,
+    
+    default: false
+  },
 });
 
 const userSchema = mongoose.Schema({
