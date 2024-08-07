@@ -23,12 +23,26 @@ router.post('/signup', (req, res) => {
       console.log(data);
       const hash = bcrypt.hashSync(req.body.password, 10);
 
+// creer les valeurs par default du sous document on_boarding
+const preferences = {
+                remote: false,
+                hybrid: false,
+                interested_in_teleworking: false,
+                encounter: false,
+                share_skills: false,
+                share_hobbies: false,
+                welcome_remoters: false,
+                go_to_remoters: false,
+                both: false,
+};
+
       const newUser = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         job: req.body.job,
         business: req.body.business,
         main_address: { city: req.body.main_address },
+        on_boarding: {preferences},
         e_mail: req.body.e_mail,
         password: hash,
         token: uid2(32),

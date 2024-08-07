@@ -2,7 +2,29 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/users');
 
-router.post('/on_boarding', (req, res) => {
+
+// router.put('/on_boarding', (req, res) => {
+//     // const {
+//     //             remote,
+//     //             hybrid,
+//     //             interested_in_teleworking,
+//     //             encounter,
+//     //             share_skills,
+//     //             share_hobbies,
+//     //             welcome_remoters,
+//     //             go_to_remoters,
+//     //             both,
+//     //         } = req.body;
+// })
+// User.updateOne({token:req.body.token}).then(() => {
+//     User.findOne({user}).then(data => {
+
+//     });
+// })
+// route PUT
+router.put('/', (req, res) => {
+
+// Utilisation de la destructuration (ex: remote: req.body.checkboxes.remote)
     const {
         remote,
         hybrid,
@@ -13,31 +35,23 @@ router.post('/on_boarding', (req, res) => {
         welcome_remoters,
         go_to_remoters,
         both,
-    } = req.body;
+    } = req.body.checkboxes;
 
-    User.findOne({ token: req.body.token }).then(user => {
-        console.log(req.body)
-        if (user !== null) {
-
-            user.on_boarding = (
-                {
-                    remote,
-                    hybrid,
-                    interested_in_teleworking,
-                    encounter,
-                    share_skills,
-                    share_hobbies,
-                    welcome_remoters,
-                    go_to_remoters,
-                    both,
-                }
-            )
-            user.save().then((data)=>{res.json({ user:data })})
+    // 2 critères à renseigner (le critère de recherche et l'élément à mettre à jour)
+    User.updateOne({ token: req.body.token }, { on_boarding: { remote, hybrid, interested_in_teleworking, encounter, share_skills, share_hobbies, welcome_remoters, go_to_remoters, both, } })
+        .then(result => {
+            console.log( 'object consologué: ', remote)
+            console.log(result)
+            if (result.modifiedCount > 0) {
+                
+                res.json({ result: true, message: 'Mise à jour réussie' });
+                
+               
+            } else {
+                res.json({ result: false, error: 'Préférences déjà existentes' });
+            }
             
-        } else {
-            res.json({ result: false, error: 'Preference already exists' });
-        }
-    });
+        });
 });
 
 router.get('/on_boarding/:userId', (req, res) => {
