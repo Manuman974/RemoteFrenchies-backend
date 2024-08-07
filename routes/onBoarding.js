@@ -40,6 +40,7 @@ router.put('/', (req, res) => {
     // 2 critères à renseigner (le critère de recherche et l'élément à mettre à jour)
     User.updateOne({ token: req.body.token }, { on_boarding: { remote, hybrid, interested_in_teleworking, encounter, share_skills, share_hobbies, welcome_remoters, go_to_remoters, both, } })
         .then(result => {
+            console.log(req.body)
             console.log( 'object consologué: ', remote)
             console.log(result)
             if (result.modifiedCount > 0) {
