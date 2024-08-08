@@ -21,55 +21,61 @@ router.post('/proposition', (req, res) => {
         token
     } = req.body;
     //user.find req.body.token
+    
+
     User.findOne({ token }).then(user => {
         if (!user) {
             return res.json({ result: false, error: 'User not found' });
+        } else {
+            Proposition.findOne({
+                main_address: { street: req.body.main_address },
+                welcome_day,
+                reception_hours,
+                fiber_connection,
+                coffee_tea,
+                dedicated_office,
+                other,
+                description,
+            })
+                .then(existingProposition => {
+                    console.log(req.body)
+                    if (existingProposition) {
+                        // erreur si proposition existante
+                        res.json({ result: false, error: 'Proposition already exists' });
+                    } else {
+                        // Creation nouvelle proposition
+                        const newProposition = new Proposition({
+                            user: user._id,
+                            main_address: { street: main_address },
+                            welcome_day,
+                            reception_hours,
+                            fiber_connection,
+                            coffee_tea,
+                            dedicated_office,
+                            other,
+                            description,
+                        });
+
+                        // Save nouvelle proposition
+                        newProposition.save()
+                            .then(savedProposition => {
+                                console.log(savedProposition)
+                                // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
+                                User.findByIdAndUpdate(User._id, { propositions: savedProposition._id })
+                                    .then(() => {
+                                        // nouvelle proposition saved
+                                        res.json({ result: true, proposition: savedProposition });
+                                    })
+
+                            })
+
+                    }
+                })
+
         }
     });
     // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
-    Proposition.findOne({
-        main_address: { street: req.body.main_address },
-        welcome_day,
-        reception_hours,
-        fiber_connection,
-        coffee_tea,
-        dedicated_office,
-        other,
-        description,
-    })
-        .then(existingProposition => {
-            console.log(req.body)
-            if (existingProposition) {
-                // erreur si proposition existante
-                res.json({ result: false, error: 'Proposition already exists' });
-            } else {
-                // Creation nouvelle proposition
-                const newProposition = new Proposition({
-                    main_address: { street: main_address },
-                    welcome_day,
-                    reception_hours,
-                    fiber_connection,
-                    coffee_tea,
-                    dedicated_office,
-                    other,
-                    description,
-                });
-
-                // Save nouvelle proposition
-                newProposition.save()
-                    .then(savedProposition => {
-                        // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
-                        User.findByIdAndUpdate(User._id, { propositions: savedProposition._id })
-                            .then(() => {
-                                // nouvelle proposition saved
-                                res.json({ result: true, proposition: savedProposition });
-                            })
-
-                    })
-
-            }
-        })
-
+ 
 });
 
 
