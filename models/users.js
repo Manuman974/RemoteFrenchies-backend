@@ -10,7 +10,8 @@ const addressSchema = mongoose.Schema({
 const on_boardingSchema = mongoose.Schema({
   remote: {
     type: Boolean,
-    default: false 
+
+    default: false,
   },
 
   hybrid: {
@@ -50,7 +51,8 @@ const on_boardingSchema = mongoose.Schema({
 
   both: {
     type: Boolean,
-    default: false
+    default: false,
+
   },
   
 });
