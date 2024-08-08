@@ -1,56 +1,58 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const addressSchema = mongoose.Schema({
   street: String,
   city: String,
- });
+  longitude: Number,
+  latitude: Number,
+});
 
- const on_boardingSchema = mongoose.Schema({
+const on_boardingSchema = mongoose.Schema({
   remote: {
     type: Boolean,
-    
     default: false 
   },
-  hybride: {
+
+  hybrid: {
     type: Boolean,
-    
     default: false
   },
+
   interested_in_teleworking: {
     type: Boolean,
-    
     default: false
   },
+
   encounter: {
     type: Boolean,
-    
     default: false
   },
+
   share_skills: {
     type: Boolean,
-    
     default: false
   },
+  
   share_hobbies: {
     type: Boolean,
-    
     default: false
   },
+
   welcome_remoters: {
     type: Boolean,
-    
     default: false
   },
+
   go_to_remoters: {
     type: Boolean,
-    
     default: false
   },
+
   both: {
     type: Boolean,
-    
     default: false
   },
+  
 });
 
 const userSchema = mongoose.Schema({
@@ -65,18 +67,11 @@ const userSchema = mongoose.Schema({
   token: String,
   main_address: addressSchema,
   on_boarding: on_boardingSchema,
-  proposition : { type: mongoose.Schema.Types.ObjectId, ref: 'propositions' },
-  discussion: { type: mongoose.Schema.Types.ObjectId, ref: 'discussions' },
-  blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blogs' },
-  
+  proposition: { type: mongoose.Schema.Types.ObjectId, ref: "propositions" },
+  discussion: { type: mongoose.Schema.Types.ObjectId, ref: "discussions" },
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "blogs" },
 });
 
-
-
-
-
-
-
-const User = mongoose.model('users', userSchema);
+const User = mongoose.model("users", userSchema);
 
 module.exports = User;
