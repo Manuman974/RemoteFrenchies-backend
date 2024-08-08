@@ -10,49 +10,94 @@ const addressSchema = mongoose.Schema({
 const on_boardingSchema = mongoose.Schema({
   remote: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false 
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
-  hybride: {
+
+  hybrid: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   interested_in_teleworking: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   encounter: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   share_skills: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+  
   share_hobbies: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   welcome_remoters: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   go_to_remoters: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+
   both: {
     type: Boolean,
+<<<<<<< HEAD
 
     default: false,
+=======
+    default: false
+>>>>>>> cb32cb4b62f990d3586cc47b8206a0dc742b6de1
   },
+  
 });
 
 const userSchema = mongoose.Schema({

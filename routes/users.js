@@ -45,9 +45,21 @@ router.post("/signup", (req, res) => {
     if (data === null) {
       console.log(data);
       const hash = bcrypt.hashSync(req.body.password, 10);
-      // récupérre les coordonnées de req.body.main_address + ajouter coordonées ligne 53
 
-      //Faire un fetch pour récupérer les coordonnées d'une ville
+      // creer les valeurs par default du sous document on_boarding
+      const preferences = {
+        remote: false,
+        hybrid: false,
+        interested_in_teleworking: false,
+        encounter: false,
+        share_skills: false,
+        share_hobbies: false,
+        welcome_remoters: false,
+        go_to_remoters: false,
+        both: false,
+      };
+
+      //Fetch pour récupérer les coordonnées d'une ville
       fetch(
         `https://api-adresse.data.gouv.fr/search/?q=${req.body.main_address}`
       )
@@ -69,6 +81,7 @@ router.post("/signup", (req, res) => {
               latitude: latitudetest,
               longitude: longitudetest,
             },
+            on_boarding: { preferences },
             e_mail: req.body.e_mail,
             password: hash,
             token: uid2(32),
@@ -96,55 +109,6 @@ router.post("/signin", (req, res) => {
       res.json({ result: true, token: data.token });
     } else {
       res.json({ result: false, error: "User not found or wrong password" });
-    }
-  });
-});
-
-router.post("/on_boarding", (req, res) => {
-  const {
-    remote,
-    hybride,
-    interested_in_teleworking,
-    encounter,
-    share_skills,
-    share_hobbies,
-    welcome_remoters,
-    go_to_remoters,
-    both,
-  } = req.body;
-
-  User.findOne({
-    remote,
-    hybride,
-    interested_in_teleworking,
-    encounter,
-    share_skills,
-    share_hobbies,
-    welcome_remoters,
-    go_to_remoters,
-    both,
-  }).then((data) => {
-    console.log(data);
-    if (data === null) {
-      const newUser = new User({
-        on_boarding: {
-          remote,
-          hybride,
-          interested_in_teleworking,
-          encounter,
-          share_skills,
-          share_hobbies,
-          welcome_remoters,
-          go_to_remoters,
-          both,
-        },
-      });
-      newUser.save().then(() => {
-        res.json({ result: true, user: newUser });
-        console.log(data);
-      });
-    } else {
-      res.json({ result: false, error: "Preference already exists" });
     }
   });
 });
