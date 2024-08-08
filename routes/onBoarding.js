@@ -3,25 +3,7 @@ var router = express.Router();
 const User = require('../models/users');
 
 
-// router.put('/on_boarding', (req, res) => {
-//     // const {
-//     //             remote,
-//     //             hybrid,
-//     //             interested_in_teleworking,
-//     //             encounter,
-//     //             share_skills,
-//     //             share_hobbies,
-//     //             welcome_remoters,
-//     //             go_to_remoters,
-//     //             both,
-//     //         } = req.body;
-// })
-// User.updateOne({token:req.body.token}).then(() => {
-//     User.findOne({user}).then(data => {
 
-//     });
-// })
-// route PUT
 router.put('/', (req, res) => {
 
 // Utilisation de la destructuration (ex: remote: req.body.checkboxes.remote)

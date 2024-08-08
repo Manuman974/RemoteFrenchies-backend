@@ -43,6 +43,7 @@ const preferences = {
         business: req.body.business,
         main_address: { city: req.body.main_address },
         on_boarding: {preferences},
+        proposition:null,
         e_mail: req.body.e_mail,
         password: hash,
         token: uid2(32),
