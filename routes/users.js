@@ -36,6 +36,8 @@ const preferences = {
                 both: false,
 };
 
+
+
       const newUser = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
