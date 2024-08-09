@@ -37,7 +37,7 @@ router.put('/', (req, res) => {
         });
 });
 
-router.get('/on_boarding/:userId', (req, res) => {
+router.get('/users/:userId', (req, res) => {
     const userId = req.params.userId;
 
     User.findById(userId)

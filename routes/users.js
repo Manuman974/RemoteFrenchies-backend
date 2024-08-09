@@ -106,7 +106,7 @@ router.post("/signin", (req, res) => {
 
   User.findOne({ e_mail: req.body.e_mail }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
-      res.json({ result: true, token: data.token });
+      res.json({ result: true, firstname:data.firstname, lastname:data.lastname, job:data.job, business:data.business, main_adress:data.main_adress, token: data.token });
     } else {
       res.json({ result: false, error: "User not found or wrong password" });
     }
@@ -133,5 +133,39 @@ router.get("/search/:city", (req, res) => {
       }
     });
 });
+
+
+
+// Route GET
+router.get('/:userId', (req, res) => {
+  
+  const userId = req.params.userId;
+
+  User.findById(userId)
+
+      .then(user => {
+        console.log(userId)
+          if (!user) {
+            
+              return res.json({ result: false, error: 'User not found' });
+          } else {
+              res.json({ result: true, message: 'User exist' });
+          }
+      });
+
+});
+
+//Route GET pour trouver un utilisateur pour Mon profil
+// router.get("/users/:userId", (req,res) => {
+//   console.log("Requete",req.params.userId )
+//   const userId = req.params.userId;
+//   User.findById(userId)
+//   .then(user => {
+//       if (!user) {
+//           return res.json({ result: false, error: 'User not found' });
+//       } else {
+//           res.json({ result: true });
+//       }
+//   });
 
 module.exports = router;
