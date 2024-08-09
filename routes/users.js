@@ -147,6 +147,40 @@ router.get("/search/:city", (req, res) => {
 //       }
 //   });
 
+
+
+// Route GET
+router.get('/:userId', (req, res) => {
+  
+  const userId = req.params.userId;
+
+  User.findById(userId)
+
+      .then(user => {
+        console.log(userId)
+          if (!user) {
+            
+              return res.json({ result: false, error: 'User not found' });
+          } else {
+              res.json({ result: true, message: 'User exist' });
+          }
+      });
+
+});
+
+//Route GET pour trouver un utilisateur pour Mon profil
+// router.get("/users/:userId", (req,res) => {
+//   console.log("Requete",req.params.userId )
+//   const userId = req.params.userId;
+//   User.findById(userId)
+//   .then(user => {
+//       if (!user) {
+//           return res.json({ result: false, error: 'User not found' });
+//       } else {
+//           res.json({ result: true });
+//       }
+//   });
+
 module.exports = router;
       
       
