@@ -36,18 +36,36 @@ const preferences = {
                 both: false,
 };
 
-      const newUser = new User({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        job: req.body.job,
-        business: req.body.business,
-        main_address: { city: req.body.main_address },
-        on_boarding: {preferences},
-        e_mail: req.body.e_mail,
-        password: hash,
-        token: uid2(32),
+//Fetch pour récupérer les coordonnées d'une ville
+fetch(
+  `https://api-adresse.data.gouv.fr/search/?q=${req.body.main_address}`
+)
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.features.length === 0) {
+      return; // Aucune action n'est réalisée si aucune ville trouvée par l'API
+    }
+    const latitudetest = data.features[0].geometry.coordinates[1];
+    const longitudetest = data.features[0].geometry.coordinates[0];
 
-      });
+    const newUser = new User({
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      job: req.body.job,
+      business: req.body.business,
+      main_address: {
+        city: req.body.main_address,
+        latitude: latitudetest,
+        longitude: longitudetest,
+      },
+      on_boarding: { preferences },
+      e_mail: req.body.e_mail,
+      password: hash,
+      token: uid2(32),
+    });
+
+
+      
 
       newUser.save().then(newDoc => {
         res.json({ result: true, token: newDoc.token });
@@ -95,7 +113,25 @@ router.get('/:userId', (req, res) => {
       });
 
 });
+//Route GET pour rechercher les utilisateurs d'une ville
 
+router.get("/search/:city", (req, res) => {
+  User.find({
+    "main_address.city": { $regex: new RegExp(req.params.city, "i") },
+  }) // Utilisation de la notation pointée pour le champ imbriqué
+    .then((data) => {
+      console.log(data);
+      if (data.length > 0) {
+        // Pour vérifier si des données ont été trouvées
+        res.json({
+          result: true,
+          userCity: data,
+          message: "Users found from this city",
+        });
+      } else {
+        res.json({ result: false, error: "City not found" });
+      });
+    });
 //Route GET pour trouver un utilisateur pour Mon profil
 // router.get("/users/:userId", (req,res) => {
 //   console.log("Requete",req.params.userId )
