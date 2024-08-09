@@ -9,8 +9,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var onboardingRouter = require('./routes/onBoarding');
 var propositionRouter = require('./routes/propositions')
-
 var app = express();
+
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
 const cors = require('cors');
 
 app.use(cors());
