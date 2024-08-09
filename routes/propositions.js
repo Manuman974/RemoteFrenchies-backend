@@ -21,12 +21,13 @@ router.post('/proposition', (req, res) => {
         token
     } = req.body;
     //user.find req.body.token
-    
+
 
     User.findOne({ token }).then(user => {
         if (!user) {
             return res.json({ result: false, error: 'User not found' });
         } else {
+            // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
             Proposition.findOne({
                 main_address: { street: req.body.main_address },
                 welcome_day,
@@ -38,7 +39,6 @@ router.post('/proposition', (req, res) => {
                 description,
             })
                 .then(existingProposition => {
-                    console.log(req.body)
                     if (existingProposition) {
                         // erreur si proposition existante
                         res.json({ result: false, error: 'Proposition already exists' });
@@ -55,29 +55,21 @@ router.post('/proposition', (req, res) => {
                             other,
                             description,
                         });
-
                         // Save nouvelle proposition
                         newProposition.save()
                             .then(savedProposition => {
-                                console.log(savedProposition)
                                 // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
                                 User.findByIdAndUpdate(User._id, { propositions: savedProposition._id })
                                     .then(() => {
                                         // nouvelle proposition saved
                                         res.json({ result: true, proposition: savedProposition });
                                     })
-
                             })
-
                     }
                 })
-
         }
     });
-    // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
- 
 });
-
 
 
 router.post('/upload', async (req, res) => {
@@ -86,13 +78,11 @@ router.post('/upload', async (req, res) => {
 
     if (!resultMove) {
         const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-        fs.unlinkSync(photoPath);
         res.json({ result: true, url: resultCloudinary.secure_url });
     } else {
         res.json({ result: false, error: resultMove });
     }
-
-
+    fs.unlinkSync(photoPath);
 });
 
 
