@@ -25,7 +25,7 @@ router.post('/proposition', (req, res) => {
 
     User.findOne({ token }).then(user => {
         if (!user) {
-            console.log(req.body)
+            console.log(user)
             return res.json({ result: false, error: 'User not found' });
         } else {
 
@@ -41,13 +41,13 @@ router.post('/proposition', (req, res) => {
                 description,
             })
                 .then(existingProposition => {
+                    //console.log(existingProposition)
                     if (existingProposition) {
                         // erreur si proposition existante
                         res.json({ result: false, error: 'Proposition already exists' });
                     } else {
                         // Creation nouvelle proposition
                         const newProposition = new Proposition({
-
                             user: user._id,
                             main_address: { street: main_address },
                             welcome_day,
