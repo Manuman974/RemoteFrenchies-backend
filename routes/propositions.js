@@ -10,7 +10,7 @@ const fs = require("fs");
 router.post("/proposition", (req, res) => {
   // Destructuration du code
   const {
-    main_address,
+    // main_address, A supprimer si la team valide les modifs //MODIF 2(suppression)
     welcome_day,
     reception_hours,
     fiber_connection,
@@ -22,6 +22,8 @@ router.post("/proposition", (req, res) => {
   } = req.body;
   //user.find req.body.token
 
+  const main_address = { street: req.body.street, city: req.body.city }; //MODIF 3(ajout)
+
   User.findOne({ token }).then((user) => {
     if (!user) {
       console.log(req.body);
@@ -29,7 +31,8 @@ router.post("/proposition", (req, res) => {
     } else {
       // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
       Proposition.findOne({
-        main_address: { street: req.body.main_address },
+        // main_address: { street: req.body.main_address }, A supprimer si la team valide les modifs // MODIF 4(suppression)
+        main_address, //Modif 5 (ajout)
         welcome_day,
         reception_hours,
         fiber_connection,
@@ -45,7 +48,8 @@ router.post("/proposition", (req, res) => {
           // Creation nouvelle proposition
           const newProposition = new Proposition({
             user: user._id,
-            main_address: { street: main_address },
+            // main_address: { street: main_address }, //A supprimer si la team valide mes modifs // MODIF 6(suppression)
+            main_address, //Modif 5 (ajout) -> Du coup en frontend faudra ajouter un input Ville. Ce champ est nécessaire pour pouvoir récupérer toutes les propositions d'une ville.
             welcome_day,
             reception_hours,
             fiber_connection,
@@ -54,6 +58,7 @@ router.post("/proposition", (req, res) => {
             other,
             description,
           });
+
           // Save nouvelle proposition
           newProposition.save().then((savedProposition) => {
             // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
