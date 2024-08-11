@@ -121,6 +121,7 @@ router.post("/signin", (req, res) => {
   });
 });
 
+// A SUPPRIMER QUAND LA ROUTE SERA AU POINT COTE PROPOSITION ET QUE LE FRONT EST MODIFIE
 //Route GET pour rechercher les utilisateurs d'une ville
 
 router.get("/search/:city", (req, res) => {

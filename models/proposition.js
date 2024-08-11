@@ -5,6 +5,8 @@ const propositionSchema = mongoose.Schema({
   main_address: {
     street: String,
     city: String, // MODIF 1
+    adressLongitude: Number, //MODIF DU AU FETCH DATA.GOUV
+    addressLatitude: Number, //MODIF DU AU FETCH DATA.GOUV
   },
   welcome_day: String,
   reception_hours: String,
