@@ -148,6 +148,7 @@ router.get("/search/:city", (req, res) => {
   Proposition.find({
     "main_address.city": { $regex: new RegExp(req.params.city, "i") },
   }) // Utilisation de la notation pointée pour le champ imbriqué
+    .populate("user")
     .then((data) => {
       console.log(data);
       if (data.length > 0) {
