@@ -71,6 +71,8 @@ return;
       const latitudetest = data.features[0].geometry.coordinates[1];
       const longitudetest = data.features[0].geometry.coordinates[0];
 
+
+
       const newUser = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,

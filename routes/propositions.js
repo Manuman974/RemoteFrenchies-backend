@@ -23,13 +23,14 @@ router.post('/proposition', (req, res) => {
     //user.find req.body.token
 
 
-    User.findOne({ token }).then(user => { 
-        if (!user) { console.log( req.body)
+    User.findOne({ token }).then(user => {
+        if (!user) {
+            console.log(user)
             return res.json({ result: false, error: 'User not found' });
-        } else { 
-        
+        } else {
+
             // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
-            Proposition.findOne({ 
+            Proposition.findOne({
                 main_address: { street: req.body.main_address },
                 welcome_day,
                 reception_hours,
@@ -38,15 +39,15 @@ router.post('/proposition', (req, res) => {
                 dedicated_office,
                 other,
                 description,
-            }) 
-                .then(existingProposition => {  
+            })
+                .then(existingProposition => {
+                    //console.log(existingProposition)
                     if (existingProposition) {
                         // erreur si proposition existante
                         res.json({ result: false, error: 'Proposition already exists' });
-                    } else { 
+                    } else {
                         // Creation nouvelle proposition
-                        const newProposition = new Proposition({ 
-                            
+                        const newProposition = new Proposition({
                             user: user._id,
                             main_address: { street: main_address },
                             welcome_day,
@@ -56,10 +57,10 @@ router.post('/proposition', (req, res) => {
                             dedicated_office,
                             other,
                             description,
-                        }); 
+                        });
                         // Save nouvelle proposition
                         newProposition.save()
-                            .then(savedProposition => { 
+                            .then(savedProposition => {
                                 // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
                                 User.findByIdAndUpdate(User._id, { propositions: savedProposition._id })
                                     .then(() => {
@@ -90,17 +91,3 @@ router.post('/upload', async (req, res) => {
 
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
