@@ -61,7 +61,7 @@ return;
 
   //Fetch pour récupérer les coordonnées d'une ville
   fetch(
-    https://api-adresse.data.gouv.fr/search/?q=${req.body.main_address}
+    `https://api-adresse.data.gouv.fr/search/?q=${req.body.main_address}`
   )
     .then((response) => response.json())
     .then((data) => {
