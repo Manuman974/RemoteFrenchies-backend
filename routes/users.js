@@ -71,21 +71,23 @@ return;
       const latitudetest = data.features[0].geometry.coordinates[1];
       const longitudetest = data.features[0].geometry.coordinates[0];
 
-  const newUser = new User({
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-    job: req.body.job,
-    business: req.body.business,
-    main_address: {
-      city: req.body.main_address,
-      latitude: latitudetest,
-      longitude: longitudetest,
-    },
-    on_boarding: { preferences },
-    e_mail: req.body.e_mail,
-    password: hash,
-    token: uid2(32),
-  });
+
+
+      const newUser = new User({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        job: req.body.job,
+        business: req.body.business,
+        main_address: {
+          city: req.body.main_address,
+          latitude: latitudetest,
+          longitude: longitudetest,
+        },
+        on_boarding: { preferences },
+        e_mail: req.body.e_mail,
+        password: hash,
+        token: uid2(32),
+      });
 
   newUser.save().then((newDoc) => {
     res.json({ result: true, token: newDoc.token });
