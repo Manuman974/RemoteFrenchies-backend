@@ -134,6 +134,36 @@ router.get("/search/:city", (req, res) => {
     });
 });
 
+// Modifie les informations de l'utilisateur
+router.put('/', (req, res) => {
+
+  // Utilisation de la destructuration (ex: remote: req.body.checkboxes.remote)
+      const {
+          firstname,
+          lastname,
+          job,
+          business,
+          main_address,
+          e_mail,
+      } = req.body;
+  
+      // 2 critères à renseigner (le critère de recherche et l'élément à mettre à jour)
+      User.updateOne({ token: req.body.token }, { firstname,lastname,job,business,main_address,e_mail })
+          .then(result => {
+              console.log(req.body)
+              console.log( 'object consologué: ', job)
+              console.log(result)
+              if (result.modifiedCount > 0) {
+                  
+                  res.json({ result: true, message: 'Mise à jour réussie' });
+                  
+                 
+              } else {
+                  res.json({ result: false, error: 'Informations inchangées' });
+              }
+              
+          });
+  });
 //Route GET pour trouver un utilisateur pour Mon profil
 // router.get("/users/:userId", (req,res) => {
 //   console.log("Requete",req.params.userId )
