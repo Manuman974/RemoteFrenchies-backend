@@ -70,7 +70,7 @@ const userSchema = mongoose.Schema({
   main_address: addressSchema,
   on_boarding: on_boardingSchema,
   proposition: { type: mongoose.Schema.Types.ObjectId, ref: "propositions" },
-  discussion: { type: mongoose.Schema.Types.ObjectId, ref: "discussions" },
+  discussion: [{ type: mongoose.Schema.Types.ObjectId, ref: "Discussion" }],
   blog: { type: mongoose.Schema.Types.ObjectId, ref: "blogs" },
 });
 

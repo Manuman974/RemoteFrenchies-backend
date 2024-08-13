@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
-const discussionSchema = mongoose.Schema({
-  user_1: id,
-  user_2: id,
-  message: messageSchema,
-});
-
 const messageSchema = mongoose.Schema({
-  author: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },  // Référence à l'utilisateur
   message: String,
-  date: date,
+  date: { type: Date, default: Date.now },
 });
 
-const Discussion = mongoose.model('Discussions', discussionSchema);
+const discussionSchema = mongoose.Schema({
+  user_1: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  user_2: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  message: [messageSchema],  // Tableau de messages
+});
+
+const Discussion = mongoose.model('Discussion', discussionSchema);
 
 module.exports = Discussion;
