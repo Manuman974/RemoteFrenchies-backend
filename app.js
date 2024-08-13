@@ -8,7 +8,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var onboardingRouter = require('./routes/onBoarding');
-var propositionRouter = require('./routes/propositions')
+var propositionRouter = require('./routes/propositions');
+var profileRouter = require('./routes/profile');
 var app = express();
 
 const fileUpload = require('express-fileupload');
@@ -28,5 +29,6 @@ app.use('/users', usersRouter);
 app.use('/onboarding', onboardingRouter );
 app.use('/', propositionRouter);
 app.use('/proposition', propositionRouter);
+app.use('/', profileRouter);
 
 module.exports = app;
