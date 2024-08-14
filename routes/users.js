@@ -123,18 +123,47 @@ router.post("/signin", (req, res) => {
   });
 });
 
+router.get('/messages/:token', (req, res) => {
+  // Récupérer l'ID de la discussion depuis les paramètres de la requête
+  const token = req.params.token;
+  User.findOne({ token: token })
+    .populate('discussion').then((data) => {
+      res.json({ result: true, data })
+    })
+});
+
+//Route GET pour trouver un utilisateur pour Mon profil
+// router.get("/users/:userId", (req,res) => {
+//   console.log("Requete",req.params.userId )
+//   const userId = req.params.userId;
+//   User.findById(userId)
+//   .then(user => {
+//       if (!user) {
+//           return res.json({ result: false, error: 'User not found' });
+//       } else {
+//           res.json({ result: true });
+//       }
+//   });
+
+
+
 // Route GET
-router.get("/:userId", (req, res) => {
+router.get('/:userId', (req, res) => {
+
   const userId = req.params.userId;
 
-  User.findById(userId).then((user) => {
-    console.log(userId);
-    if (!user) {
-      return res.json({ result: false, error: "User not found" });
-    } else {
-      res.json({ result: true, message: "User exist" });
-    }
-  });
+  User.findById(userId)
+
+    .then(user => {
+      console.log(userId)
+      if (!user) {
+
+        return res.json({ result: false, error: 'User not found' });
+      } else {
+        res.json({ result: true, message: 'User exist' });
+      }
+    });
+
 });
 
 module.exports = router;
