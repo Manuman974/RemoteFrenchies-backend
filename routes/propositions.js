@@ -139,7 +139,8 @@ router.post("/upload", async (req, res) => {
 router.get("/search/:city", (req, res) => {
   Proposition.find({
     "main_address.city": { $regex: new RegExp(req.params.city, "i") },
-  }) // Utilisation de la notation pointée pour le champ imbriqué
+  }) // Utilisation de la notation pointée pour le champ imbriqué + populate pour récupérer les infos de l'utilisateur
+  .populate('user')
     .then((data) => {
       console.log(data);
       if (data.length > 0) {

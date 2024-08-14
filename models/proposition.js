@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const propositionSchema = mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   main_address: {
     street: String,
     city: String, // MODIF 1
