@@ -10,51 +10,48 @@ const addressSchema = mongoose.Schema({
 const on_boardingSchema = mongoose.Schema({
   remote: {
     type: Boolean,
-
     default: false,
   },
 
   hybrid: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   interested_in_teleworking: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   encounter: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   share_skills: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  
+
   share_hobbies: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   welcome_remoters: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   go_to_remoters: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   both: {
     type: Boolean,
     default: false,
-
   },
-  
 });
 
 const userSchema = mongoose.Schema({
@@ -64,7 +61,7 @@ const userSchema = mongoose.Schema({
   business: String,
   phone_number: String,
   e_mail: String,
-  profile_picture: String,
+  photoProfile: String,
   password: String,
   token: String,
   main_address: addressSchema,
