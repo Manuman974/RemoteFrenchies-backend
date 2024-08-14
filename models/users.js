@@ -61,7 +61,7 @@ const userSchema = mongoose.Schema({
   business: String,
   phone_number: String,
   e_mail: String,
-  photoProfile: String,
+  profile_picture: String,
   password: String,
   token: String,
   main_address: addressSchema,
