@@ -55,15 +55,16 @@ router.post("/proposition", (req, res) => {
           )
             .then((response) => response.json())
             .then((data) => {
-              if (data.features.length === 0) {
-                return; // Aucune action n'est réalisée si aucune ville trouvée par l'API
-              }
               console.log(encodeURIComponent(req.body.street));
               console.log("ADRESS DATA:", data.features);
 
               //DECLARATION D'UNE VARIABLE POUR FILTRER & RECUPERER ADRESSE PROPOSITION
               const dataCollect = data.features
-                .filter((address) => address.properties.city == req.body.city) // Filtrer les données qui correspondent à la ville
+                .filter(
+                  (address) =>
+                    address.properties.city.toLowerCase() ==
+                    req.body.city.toLowerCase()
+                ) // Filtrer les données qui correspondent à la ville
                 .map((filteredAddress) => {
                   return {
                     fullAddress: filteredAddress.properties.label,
@@ -73,6 +74,13 @@ router.post("/proposition", (req, res) => {
                 });
 
               console.log("FILTERED ADDRESS:", dataCollect);
+
+              if (dataCollect.length === 0) {
+                return res.json({
+                  result: false,
+                  error: "No address found matching the city",
+                });
+              }
 
               // Creation nouvelle proposition
               const newProposition = new Proposition({
@@ -139,8 +147,8 @@ router.post("/upload", async (req, res) => {
 router.get("/search/:city", (req, res) => {
   Proposition.find({
     "main_address.city": { $regex: new RegExp(req.params.city, "i") },
-  }) // Utilisation de la notation pointée pour le champ imbriqué + populate pour récupérer les infos de l'utilisateur
-  .populate('user')
+  }) // Utilisation de la notation pointée pour le champ imbriqué
+    .populate("user")
     .then((data) => {
       console.log(data);
       if (data.length > 0) {
