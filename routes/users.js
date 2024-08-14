@@ -81,6 +81,8 @@ router.post("/signup", (req, res) => {
               latitude: latitudetest,
               longitude: longitudetest,
             },
+            profile_picture:
+              "https://asset.cloudinary.com/dk074zmxu/fe9d8bc236d3c7164e01502a277a65a3",
             on_boarding: { preferences },
             e_mail: req.body.e_mail,
             password: hash,
@@ -120,41 +122,6 @@ router.post("/signin", (req, res) => {
     }
   });
 });
-
-// A SUPPRIMER QUAND LA ROUTE SERA AU POINT COTE PROPOSITION ET QUE LE FRONT EST MODIFIE
-//Route GET pour rechercher les utilisateurs d'une ville
-
-router.get("/search/:city", (req, res) => {
-  User.find({
-    "main_address.city": { $regex: new RegExp(req.params.city, "i") },
-  }) // Utilisation de la notation pointée pour le champ imbriqué
-    .then((data) => {
-      console.log(data);
-      if (data.length > 0) {
-        // Pour vérifier si des données ont été trouvées
-        res.json({
-          result: true,
-          userCity: data,
-          message: "Users found from this city",
-        });
-      } else {
-        res.json({ result: false, error: "City not found" });
-      }
-    });
-});
-
-//Route GET pour trouver un utilisateur pour Mon profil
-// router.get("/users/:userId", (req,res) => {
-//   console.log("Requete",req.params.userId )
-//   const userId = req.params.userId;
-//   User.findById(userId)
-//   .then(user => {
-//       if (!user) {
-//           return res.json({ result: false, error: 'User not found' });
-//       } else {
-//           res.json({ result: true });
-//       }
-//   });
 
 // Route GET
 router.get("/:userId", (req, res) => {
