@@ -59,4 +59,13 @@ router.post('/messages', (req, res) => {
         })
 });
 
+router.get('/messages/:token', (req, res) => {
+    // Récupérer l'ID de la discussion depuis les paramètres de la requête
+    const token = req.params.token;
+    User.findOne({ token: token })
+        .populate('discussion').then((data) => {
+            res.json({ result: true, data })
+        })
+});
+
 module.exports = router;
