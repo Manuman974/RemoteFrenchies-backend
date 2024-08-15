@@ -10,16 +10,16 @@ const User = require("../models/users");
 router.put("/profile", async (req, res) => {
   const photoPath = `./tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
-
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-    const token = req.body.token;
-
-    User.updateOne(
-      { token },
-      { profile_picture: resultCloudinary.secure_url }
-    ).then((updateResult) => {
-      if (updateResult.modifiedCount > 0) {
+    const token = req.body.Token;
+    User.findOne(
+      { token }
+      // { profile_picture: resultCloudinary.secure_url }
+    ).then((userDoc) => {
+      if (userDoc) {
+        userDoc.profile_picture = resultCloudinary.secure_url;
+        userDoc.save();
         res.json({ result: true, url: resultCloudinary.secure_url });
       } else {
         res.json({
