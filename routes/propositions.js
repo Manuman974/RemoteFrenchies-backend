@@ -19,6 +19,7 @@ router.post("/proposition", (req, res) => {
     other,
     description,
     token,
+    home_photo, //MODIF URL
   } = req.body;
   //user.find req.body.token
   const main_address = { street: req.body.street, city: req.body.city }; //MODIF 3(ajout)
@@ -46,36 +47,41 @@ router.post("/proposition", (req, res) => {
           // erreur si proposition existante
           res.json({ result: false, error: "Proposition already exists" });
         } else {
-          //MOFIF INTRODUCTION DE MON FETCH POUR RECUPERER TOUTES LES PROPOSITIONS D'UNE VILLE
+          //FETCH POUR RECUPERER LES COORDONNEES ADRESSES
           //encodeURI permet d'ajouter des caractères spéciaux à une chaîne de caractères pour que les paramètres puissent être lus par l'API quand elle attend des caractères spéciaux entre mot par exemple
           fetch(
             `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
-              req.body.street
+              `${req.body.street} ${req.body.city}`
             )}`
           )
             .then((response) => response.json())
             .then((data) => {
               console.log(encodeURIComponent(req.body.street));
-              console.log("ADRESS DATA:", data.features);
+              console.log(encodeURIComponent(req.body.city));
+              console.log("ADRESS DATA:", data.features[0].geometry);
 
-              //DECLARATION D'UNE VARIABLE POUR FILTRER & RECUPERER ADRESSE PROPOSITION
-              const dataCollect = data.features
-                .filter(
-                  (address) =>
-                    address.properties.city.toLowerCase() ==
-                    req.body.city.toLowerCase()
-                ) // Filtrer les données qui correspondent à la ville
-                .map((filteredAddress) => {
-                  return {
-                    fullAddress: filteredAddress.properties.label,
-                    coordinates: filteredAddress.geometry.coordinates,
-                    city: filteredAddress.properties.city,
-                  };
-                });
+              const latitude = data.features[0].geometry.coordinates[1];
 
-              console.log("FILTERED ADDRESS:", dataCollect);
+              const longitude = data.features[0].geometry.coordinates[0];
 
-              if (dataCollect.length === 0) {
+              // //DECLARATION D'UNE VARIABLE POUR FILTRER & RECUPERER ADRESSE PROPOSITION
+              // const dataCollect = data.features
+              //   .filter(
+              //     (address) =>
+              //       address.properties.city.toLowerCase() ==
+              //       req.body.city.toLowerCase()
+              //   ) // Filtrer les données qui correspondent à la ville
+              //   .map((filteredAddress) => {
+              //     return {
+              //       fullAddress: filteredAddress.properties.label,
+              //       coordinates: filteredAddress.geometry.coordinates,
+              //       city: filteredAddress.properties.city,
+              //     };
+              //   });
+
+              // console.log("FILTERED ADDRESS:", dataCollect);
+
+              if (data.length === 0) {
                 return res.json({
                   result: false,
                   error: "No address found matching the city",
@@ -90,8 +96,8 @@ router.post("/proposition", (req, res) => {
                 main_address: {
                   street: req.body.street,
                   city: req.body.city,
-                  adressLongitude: dataCollect[0].coordinates[0],
-                  addressLatitude: dataCollect[0].coordinates[1],
+                  addressLongitude: longitude,
+                  addressLatitude: latitude,
                 },
                 //MODIF 7 (ajout) -> Du coup en frontend faudra ajouter un input Ville. Pour récupérer cette donnée en backend et l'utiliser en frontend.
                 welcome_day,
@@ -101,6 +107,7 @@ router.post("/proposition", (req, res) => {
                 dedicated_office,
                 other,
                 description,
+                home_photo, //MODIF URL
               });
               // Save nouvelle proposition
               newProposition.save().then((savedProposition) => {
@@ -109,9 +116,9 @@ router.post("/proposition", (req, res) => {
 
                 User.findByIdAndUpdate(
                   user._id, // MODIF 8 (remplacé User._id par user._id)
-                  { proposition: savedProposition._id }, //Permet de modifier le document user en ajoutant un champs et une valeur
+                  { proposition: savedProposition._id } //Permet de modifier le document user en ajoutant un champs et une valeur
 
-                  { new: true } //MODIF 9(ajout) Permet de mettre à jour le document user
+                  // { new: true } //MODIF 9(ajout) Permet de mettre à jour le document user
                 ).then(() => {
                   // nouvelle proposition saved
                   res.json({
