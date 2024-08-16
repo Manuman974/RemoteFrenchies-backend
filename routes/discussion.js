@@ -38,7 +38,7 @@ router.post('/messages', (req, res) => {
                     // Si la discussion n'existe pas, créer une nouvelle discussion
                     const newDiscussion = new Discussion({
                         user_1: user._id,
-                        user_2: null, // à déterminer plus tard
+                        user_2: user._id, // à déterminer plus tard
                         message: [newMessage]
                     });
 
