@@ -13,9 +13,9 @@ router.put("/profile", async (req, res) => {
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
     const token = req.body.Token;
+   
     User.findOne(
       { token }
-      // { profile_picture: resultCloudinary.secure_url }
     ).then((userDoc) => {
       if (userDoc) {
         userDoc.profile_picture = resultCloudinary.secure_url;

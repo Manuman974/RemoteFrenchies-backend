@@ -25,16 +25,13 @@ router.post("/proposition", (req, res) => {
   const main_address = { street: req.body.street, city: req.body.city }; //MODIF 3(ajout)
 
   User.findOne({ token }).then((user) => {
-    console.log("DATA USER : ", user);
     if (!user) {
-      console.log(req.body);
       return res.json({ result: false, error: "User not found" });
     } else {
-      console.log("REQ:", req.body);
+
       // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
       Proposition.findOne({
-        // main_address: { street: req.body.main_address }, A supprimer si la team valide les modifs // MODIF 4(suppression)
-        main_address, //Modif 5 (ajout)
+        main_address,
         welcome_day,
         reception_hours,
         fiber_connection,
@@ -56,30 +53,10 @@ router.post("/proposition", (req, res) => {
           )
             .then((response) => response.json())
             .then((data) => {
-              console.log(encodeURIComponent(req.body.street));
-              console.log(encodeURIComponent(req.body.city));
-              console.log("ADRESS DATA:", data.features[0].geometry);
 
               const latitude = data.features[0].geometry.coordinates[1];
 
               const longitude = data.features[0].geometry.coordinates[0];
-
-              // //DECLARATION D'UNE VARIABLE POUR FILTRER & RECUPERER ADRESSE PROPOSITION
-              // const dataCollect = data.features
-              //   .filter(
-              //     (address) =>
-              //       address.properties.city.toLowerCase() ==
-              //       req.body.city.toLowerCase()
-              //   ) // Filtrer les données qui correspondent à la ville
-              //   .map((filteredAddress) => {
-              //     return {
-              //       fullAddress: filteredAddress.properties.label,
-              //       coordinates: filteredAddress.geometry.coordinates,
-              //       city: filteredAddress.properties.city,
-              //     };
-              //   });
-
-              // console.log("FILTERED ADDRESS:", dataCollect);
 
               if (data.length === 0) {
                 return res.json({
@@ -91,8 +68,6 @@ router.post("/proposition", (req, res) => {
               // Creation nouvelle proposition
               const newProposition = new Proposition({
                 user: user._id,
-                // main_address: { street: main_address }, // MODIF 6(suppression)
-
                 main_address: {
                   street: req.body.street,
                   city: req.body.city,
@@ -111,11 +86,11 @@ router.post("/proposition", (req, res) => {
               });
               // Save nouvelle proposition
               newProposition.save().then((savedProposition) => {
-                console.log("SAVEDPROPOSITION :", savedProposition);
+  
                 // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
 
                 User.findByIdAndUpdate(
-                  user._id, // MODIF 8 (remplacé User._id par user._id)
+                  user._id,
                   { proposition: savedProposition._id } //Permet de modifier le document user en ajoutant un champs et une valeur
 
                   // { new: true } //MODIF 9(ajout) Permet de mettre à jour le document user
@@ -135,7 +110,6 @@ router.post("/proposition", (req, res) => {
 });
 
 router.post("/upload", async (req, res) => {
-  console.log("infos:", req.files.photoFromFront);
   const photoPath = `./tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
 
@@ -148,7 +122,7 @@ router.post("/upload", async (req, res) => {
   fs.unlinkSync(photoPath);
 });
 
-//MODIF
+
 //Route GET pour rechercher les Remoters d'une ville
 
 router.get("/search/:city", (req, res) => {
@@ -157,7 +131,6 @@ router.get("/search/:city", (req, res) => {
   }) // Utilisation de la notation pointée pour le champ imbriqué
     .populate("user")
     .then((data) => {
-      console.log(data);
       if (data.length > 0) {
         // Pour vérifier si des données ont été trouvées
         res.json({

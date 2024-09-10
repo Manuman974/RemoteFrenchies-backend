@@ -43,7 +43,6 @@ router.post("/signup", (req, res) => {
     e_mail: req.body.e_mail,
   }).then((data) => {
     if (data === null) {
-      console.log(data);
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       // creer les valeurs par default du sous document on_boarding
@@ -81,8 +80,7 @@ router.post("/signup", (req, res) => {
               latitude: latitudetest,
               longitude: longitudetest,
             },
-            profile_picture:
-              "https://asset.cloudinary.com/dk074zmxu/fe9d8bc236d3c7164e01502a277a65a3",
+            profile_picture:"https://asset.cloudinary.com/dk074zmxu/fe9d8bc236d3c7164e01502a277a65a3",
             on_boarding: { preferences },
             e_mail: req.body.e_mail,
             password: hash,
