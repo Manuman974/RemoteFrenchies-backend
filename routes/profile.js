@@ -9,7 +9,7 @@ const User = require("../models/users");
 
 router.put("/profile", async (req, res) => {
   console.log("Requête reçue:", req.body);
-  const photoPath = `./tmp/${uniqid()}.jpg`;
+  const photoPath = `/tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
