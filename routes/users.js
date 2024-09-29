@@ -101,21 +101,21 @@ router.post("/signup", (req, res) => {
   });
 });
 
-router.post('/signin', (req, res) => {
-  if (!checkBody(req.body, ['e_mail', 'password'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
+// router.post('/signin', (req, res) => {
+//   if (!checkBody(req.body, ['e_mail', 'password'])) {
+//     res.json({ result: false, error: 'Missing or empty fields' });
+//     return;
+//   }
 
-  User.findOne({ e_mail: req.body.e_mail }).then(data => {
-    if (data && bcrypt.compareSync(req.body.password, data.password)) {
-      res.json({ result: true, firstname:data.firstname, lastname:data.lastname, job:data.job, business:data.business, main_adress:data.main_adress, token: data.token });
-    } else {
-      // User already exists in database
-      res.json({ result: false, error: "User already exists" });
-    }
-  });
-});
+//   User.findOne({ e_mail: req.body.e_mail }).then(data => {
+//     if (data && bcrypt.compareSync(req.body.password, data.password)) {
+//       res.json({ result: true, userId: data._id, firstname:data.firstname, lastname:data.lastname, job:data.job, business:data.business, main_adress:data.main_adress, token: data.token });
+//     } else {
+//       // User already exists in database
+//       res.json({ result: false, error: "User already exists" });
+//     }
+//   });
+// });
 
 router.post("/signin", (req, res) => {
   if (!checkBody(req.body, ["e_mail", "password"])) {
@@ -125,14 +125,18 @@ router.post("/signin", (req, res) => {
 
   User.findOne({ e_mail: req.body.e_mail }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
+      console.log("Profile picture URL:", data.profile_picture);
       res.json({
         result: true,
+        userId: data._id,
         firstname: data.firstname,
         lastname: data.lastname,
         job: data.job,
         business: data.business,
         main_adress: data.main_adress,
         token: data.token,
+        profile_picture: data.profile_picture,
+        photos: data.photos || [],
       });
     } else {
       res.json({ result: false, error: "User not found or wrong password" });
@@ -140,14 +144,27 @@ router.post("/signin", (req, res) => {
   });
 });
 
-router.get('/messages/:token', (req, res) => {
-  // Récupérer l'ID de la discussion depuis les paramètres de la requête
-  const token = req.params.token;
-  User.findOne({ token: token })
-    .populate('discussion').then((data) => {
-      res.json({ result: true, data })
-    })
+// Récupération des messages
+router.get("/messages/:token", async (req, res) => {
+  const user = await User.findOne({ token: req.params.token }).populate("discussion");
+  if (!user) {
+    return res.json({ result: false, error: "User not found" });
+  }
+  
+  res.json({ result: true, messages: user.discussion 
+
+  });
 });
+
+
+// // router.get('/messages/:token', (req, res) => {
+// //   const token = req.params.token;
+// //   User.findOne({ token: token })
+// //     .populate('discussion').then((data) => {
+// //       res.json({ result: true, data })
+// //     })
+
+// });
 
 //Route GET pour trouver un utilisateur pour Mon profil
 // router.get("/users/:userId", (req,res) => {

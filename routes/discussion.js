@@ -2,68 +2,183 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/users'); // Import Users model
 const Discussion = require('../models/discussion'); // Import Discussion model or Message model
+const mongoose = require('mongoose');
+const Pusher = require('pusher');
 
-// POST - Envoyer un nouveau message
-router.post('/messages', (req, res) => {
-    const { text, token } = req.body;
+const pusher = new Pusher({
+    appId: process.env.APP_ID,
+    key: process.env.KEY,
+    secret: process.env.SECRET,
+    cluster: process.env.CLUSTER,
+    useTLS: true,
+});
 
-    // Rechercher l'utilisateur à partir du token
+// Route pour vérifier ou créer une discussion entre deux utilisateurs
+router.post('/discussions/message', (req, res) => {
+    const { token, userId, text } = req.body;
+
+    if (!text || !token || !userId) {
+        return res.status(400).json({ result: false, error: 'Missing text, token, or userId' });
+    }
+
     User.findOne({ token })
         .then(user => {
             if (!user) {
-                return res.json({ result: false, error: 'User not found' });
+                return res.status(404).json({ result: false, error: 'User not found' });
             }
-            // Création du nouveau message
+
             const newMessage = {
                 message: text,
                 author: user._id,
                 date: new Date()
             };
 
-            // Rechercher une discussion existante entre user_1 et user_2
+            return Discussion.findOneAndUpdate(
+                {
+                    $or: [
+                        { user_1: user._id, user_2: userId },
+                        { user_1: userId, user_2: user._id }
+                    ]
+                },
+                { $push: { message: newMessage } }, // Ajoute le message à la discussion
+                { new: true, upsert: true } // Crée une nouvelle discussion si elle n'existe pas
+            ).then(savedDiscussion => {
+                // Émettre un événement Pusher après avoir sauvegardé le message
+                pusher.trigger(`discussion-${savedDiscussion._id}`, 'new-message', {
+                    message: newMessage,
+                    userId: user._id,
+                });
+                res.json({ result: true, discussion: savedDiscussion });
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ result: false, error: 'Internal server error' });
+        });
+});
+
+router.get('/discussions/messages/:token/:otherUserId', (req, res) => {
+    const { token } = req.params;
+    console.log("Token reçu:", token);
+
+    User.findOne({ token })
+        .then(user => {
+            if (!user) {
+                console.log("Utilisateur non trouvé pour le token:", token);
+                return res.status(404).json({ result: false, error: 'User not found' });
+            }
+            console.log("Utilisateur trouvé:", user);
+            // Récupérer toutes les discussions de l'utilisateur, excluant celles avec lui-même
+            return Discussion.find({
+                $or: [{ user_1: user._id }, { user_2: user._id }],
+                // user_1: { $ne: user._id }, // Exclure les discussions où l'utilisateur est les deux parties
+                // user_2: { $ne: user._id }
+            }).populate('user_1 user_2 message.author')
+              .then(discussions => {
+                console.log("Discussions trouvées:", discussions);
+                  if (!discussions || discussions.length === 0) {
+                      return res.json({ result: false, message: 'No discussions found' });
+                  }
+                  res.json({ result: true, discussions });
+              });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ result: false, error: 'Internal server error' });
+        });
+});
+
+// Route pour récupérer les messages d'une discussion entre deux utilisateurs
+// router.get('/messages/:token/:userId', (req, res) => {
+//     const { token, userId } = req.params;
+
+//     if (!token || !userId) {
+//         return res.status(400).json({ error: 'Missing token or userId' });
+//     }
+
+//     if (!mongoose.isValidObjectId(userId)) {
+//         return res.status(400).json({ result: false, error: 'Invalid user ID' });
+//     }
+
+//     User.findOne({ token })
+//         .then(user => {
+//             if (!user) {
+//                 return res.status(404).json({ result: false, error: 'User not found' });
+//             }
+
+//             return Discussion.findOne({
+//                 $or: [
+//                     { user_1: user._id, user_2: userId },
+//                     { user_1: userId, user_2: user._id }
+//                 ]
+//             }).populate('message.author');
+//         })
+//         .then(discussion => {
+//             if (!discussion) {
+//                 return res.status(404).json({ result: false, error: 'Discussion not found' });
+//             }
+//             res.json({ result: true, discussion });
+//         })
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({ result: false, error: 'Internal server error' });
+//         });
+// });
+
+// POST - Envoyer un nouveau message dans une discussion
+router.post('/discussions/messages', (req, res) => {
+    const { text, token, userId } = req.body;
+
+    User.findOne({ token })
+        .then(user => {
+            if (!user) {
+                return res.status(404).json({ result: false, error: 'User not found' });
+            }
+
+            const newMessage = {
+                message: text,
+                author: user._id,
+                date: new Date()
+            };
+
             return Discussion.findOne({
                 $or: [
-                    { user_1: user._id },
-                    { user_2: user._id }
+                    { user_1: user._id, user_2: userId },
+                    { user_1: userId, user_2: user._id }
                 ]
             }).then(existingDiscussion => {
                 if (existingDiscussion) {
-                    // Si une discussion existe déjà, ajouter le message à cette discussion
                     existingDiscussion.message.push(newMessage);
                     return existingDiscussion.save().then(savedDiscussion => {
+                        // Émettre un événement Pusher après avoir sauvegardé le message
+                        pusher.trigger(`discussion-${savedDiscussion._id}`, 'new-message', {
+                            message: newMessage,
+                            userId: user._id,
+                        });
                         res.json({ result: true, discussion: savedDiscussion });
                     });
                 } else {
-                    // Si la discussion n'existe pas, créer une nouvelle discussion
                     const newDiscussion = new Discussion({
                         user_1: user._id,
-                        user_2: user._id, // à déterminer plus tard
+                        user_2: userId,
                         message: [newMessage]
                     });
 
-                    // Sauvegarder la nouvelle discussion
                     return newDiscussion.save().then(savedDiscussion => {
-                        //Ajouter la discussion à l'utilisateur
-                        return User.findByIdAndUpdate(
-                            user._id,
-                            { $push: { discussion: savedDiscussion._id } },
-                            { new: true }
-                            ).then((data) => {
-                            res.json({ result: true, discussion: savedDiscussion });
+                        // Émettre un événement Pusher après avoir créé la nouvelle discussion
+                        pusher.trigger(`discussion-${savedDiscussion._id}`, 'new-message', {
+                            message: newMessage,
+                            userId: user._id,
                         });
+                        res.json({ result: true, discussion: savedDiscussion });
                     });
                 }
             });
         })
-});
-
-router.get('/messages/:token', (req, res) => {
-    // Récupérer l'ID de la discussion depuis les paramètres de la requête
-    const token = req.params.token;
-    User.findOne({ token: token })
-        .populate('discussion').then((data) => {
-            res.json({ result: true, data })
-        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ result: false, error: 'Internal server error' });
+        });
 });
 
 module.exports = router;

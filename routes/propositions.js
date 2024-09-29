@@ -6,6 +6,7 @@ const Proposition = require("../models/proposition");
 const uniqid = require("uniqid");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const os = require('os'); // Import os for tmp directory
 
 router.post("/proposition", (req, res) => {
   // Destructuration du code
@@ -110,16 +111,31 @@ router.post("/proposition", (req, res) => {
 });
 
 router.post("/upload", async (req, res) => {
-  const photoPath = `/tmp/${uniqid()}.jpg`;
-  const resultMove = await req.files.photoFromFront.mv(photoPath);
-
-  if (!resultMove) {
-    const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-    res.json({ result: true, url: resultCloudinary.secure_url });
-  } else {
-    res.json({ result: false, error: resultMove });
+  // Vérifie que req.files contient bien les fichiers attendus
+  if (!req.files || !req.files.photoFromFront) {
+    return res.status(400).json({ result: false, error: "Aucun fichier reçu" });
   }
-  fs.unlinkSync(photoPath);
+
+  // Chemin temporaire dynamique pour Windows
+  const tmpDir = os.tmpdir();
+  const photoPath = `${tmpDir}/${uniqid()}.jpg`;
+
+  try {
+    // Déplace l'image temporaire
+    await req.files.photoFromFront.mv(photoPath);
+
+    // Télécharge l'image sur Cloudinary
+    const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+    
+    // Envoie l'URL Cloudinary en réponse
+    res.json({ result: true, url: resultCloudinary.secure_url });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ result: false, error: "Erreur lors du téléchargement Cloudinary" });
+  } finally {
+    // Supprime le fichier temporaire après utilisation
+    fs.unlinkSync(photoPath);
+  }
 });
 
 

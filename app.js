@@ -13,6 +13,8 @@ var profileRouter = require('./routes/profile');
 var discussionRouter = require('./routes/discussion');
 var app = express();
 
+
+
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
@@ -31,6 +33,6 @@ app.use('/onboarding', onboardingRouter );
 app.use('/', propositionRouter);
 app.use('/proposition', propositionRouter);
 app.use('/', profileRouter);
-app.use('/discussions', discussionRouter);
+app.use('/', discussionRouter);
 
 module.exports = app;
