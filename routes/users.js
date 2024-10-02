@@ -156,6 +156,20 @@ router.get("/messages/:token", async (req, res) => {
   });
 });
 
+// Route pour modifier les informations de l'utilisateur
+router.put("/update/:userId", (req, res) => {
+  const userId = req.params.userId;
+  const updateData = req.body; // Les nouvelles informations à mettre à jour
+
+  User.findByIdAndUpdate(userId, updateData, { new: true })
+    .then((updatedUser) => {
+      if (!updatedUser) {
+        return res.json({ result: false, error: "User not found" });
+      }
+      res.json({ result: true, user: updatedUser });
+    })
+    .catch((error) => res.json({ result: false, error: error.message }));
+});
 
 // // router.get('/messages/:token', (req, res) => {
 // //   const token = req.params.token;
