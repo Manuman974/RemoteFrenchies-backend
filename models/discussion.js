@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const messageSchema = mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },  // Référence à l'utilisateur
   message: String,
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: Date.now }, // A VERIFIER
 });
 
 const discussionSchema = mongoose.Schema({
