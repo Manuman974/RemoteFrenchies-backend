@@ -13,8 +13,6 @@ var profileRouter = require('./routes/profile');
 var discussionRouter = require('./routes/discussion');
 var app = express();
 
-
-
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 

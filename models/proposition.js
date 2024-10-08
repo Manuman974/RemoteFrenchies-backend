@@ -4,9 +4,9 @@ const propositionSchema = mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   main_address: {
     street: String,
-    city: String, // MODIF 1
-    addressLongitude: Number, //MODIF DU AU FETCH DATA.GOUV
-    addressLatitude: Number, //MODIF DU AU FETCH DATA.GOUV
+    city: String,
+    addressLongitude: Number,
+    addressLatitude: Number,
   },
   welcome_day: String,
   reception_hours: String,
@@ -23,7 +23,6 @@ const propositionSchema = mongoose.Schema({
     default: false,
   },
   other: String,
-  // home_photo: String,
   home_photo: [String],
   description: String,
 });

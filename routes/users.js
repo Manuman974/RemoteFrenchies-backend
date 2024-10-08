@@ -6,6 +6,7 @@ const { checkBody } = require("../modules/checkBody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 
+// Créer un nouvel utilisateur par la page Signup
 router.post("/signup", (req, res) => {
   if (
     !checkBody(req.body, [
@@ -33,7 +34,7 @@ router.post("/signup", (req, res) => {
     return;
   }
 
-  // route ajout nouvel utilisateur page signup
+  // Ajout nouvel utilisateur page signup
   User.findOne({
     firstname: req.body.firstname,
     lastname: req.body.lastname,
@@ -87,36 +88,17 @@ router.post("/signup", (req, res) => {
             token: uid2(32),
           });
 
-
-      
-
   newUser.save().then((newDoc) => {
     res.json({ result: true, token: newDoc.token });
   });
 });
 } else {
-  // User already exists in database
   res.json({ result: false, error: "User already exists" });
 }
   });
 });
 
-// router.post('/signin', (req, res) => {
-//   if (!checkBody(req.body, ['e_mail', 'password'])) {
-//     res.json({ result: false, error: 'Missing or empty fields' });
-//     return;
-//   }
-
-//   User.findOne({ e_mail: req.body.e_mail }).then(data => {
-//     if (data && bcrypt.compareSync(req.body.password, data.password)) {
-//       res.json({ result: true, userId: data._id, firstname:data.firstname, lastname:data.lastname, job:data.job, business:data.business, main_adress:data.main_adress, token: data.token });
-//     } else {
-//       // User already exists in database
-//       res.json({ result: false, error: "User already exists" });
-//     }
-//   });
-// });
-
+// Connexion d'un utilisateur
 router.post("/signin", (req, res) => {
   if (!checkBody(req.body, ["e_mail", "password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
@@ -171,31 +153,7 @@ router.put("/update/:userId", (req, res) => {
     .catch((error) => res.json({ result: false, error: error.message }));
 });
 
-// // router.get('/messages/:token', (req, res) => {
-// //   const token = req.params.token;
-// //   User.findOne({ token: token })
-// //     .populate('discussion').then((data) => {
-// //       res.json({ result: true, data })
-// //     })
-
-// });
-
-//Route GET pour trouver un utilisateur pour Mon profil
-// router.get("/users/:userId", (req,res) => {
-//   console.log("Requete",req.params.userId )
-//   const userId = req.params.userId;
-//   User.findById(userId)
-//   .then(user => {
-//       if (!user) {
-//           return res.json({ result: false, error: 'User not found' });
-//       } else {
-//           res.json({ result: true });
-//       }
-//   });
-
-
-
-// Route GET
+// Vérifie si un utilisateur existe dans la base de données
 router.get('/:userId', (req, res) => {
 
   const userId = req.params.userId;

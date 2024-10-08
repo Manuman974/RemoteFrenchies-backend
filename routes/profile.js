@@ -5,9 +5,9 @@ const os = require('os'); // Import os for tmp directory
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
 const fs = require("fs");
-
 const User = require("../models/users");
 
+// Mise à jour du profil de l'utilisateur
 router.put("/profile", async (req, res) => {
   console.log("Requête reçue:", req.body);
 

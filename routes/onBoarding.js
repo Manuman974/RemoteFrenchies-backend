@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/users');
 
-
-
+// Mise à jour des données Onboarding
 router.put('/', (req, res) => {
 
 // Utilisation de la destructuration (ex: remote: req.body.checkboxes.remote)
@@ -34,6 +33,7 @@ router.put('/', (req, res) => {
         });
 });
 
+// Récupère les données de l'utilisateur
 router.get('/users/:userId', (req, res) => {
     const userId = req.params.userId;
 

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const messageSchema = mongoose.Schema({
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },  // Référence à l'utilisateur
-  message: String,
-  date: { type: Date, default: Date.now }, // A VERIFIER
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  message: { type: String, required: true },
+  date: { type: Date, default: Date.now },
 });
 
 const discussionSchema = mongoose.Schema({

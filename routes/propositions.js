@@ -9,10 +9,10 @@ const fs = require("fs");
 const os = require('os'); // Import os for tmp directory
 const geolib = require("geolib"); // Assurez-vous d'avoir installé geolib
 
+
 router.post("/proposition", (req, res) => {
   // Destructuration du code
   const {
-    // main_address, //MODIF 2(suppression)
     welcome_day,
     reception_hours,
     fiber_connection,
@@ -21,9 +21,8 @@ router.post("/proposition", (req, res) => {
     other,
     description,
     token,
-    home_photo, //MODIF URL
+    home_photo,
   } = req.body;
-  //user.find req.body.token
   const main_address = { street: req.body.street, city: req.body.city }; //MODIF 3(ajout)
 
   User.findOne({ token }).then((user) => {
@@ -46,6 +45,7 @@ router.post("/proposition", (req, res) => {
           // erreur si proposition existante
           res.json({ result: false, error: "Proposition already exists" });
         } else {
+
           //FETCH POUR RECUPERER LES COORDONNEES ADRESSES
           //encodeURI permet d'ajouter des caractères spéciaux à une chaîne de caractères pour que les paramètres puissent être lus par l'API quand elle attend des caractères spéciaux entre mot par exemple
           fetch(
@@ -76,7 +76,6 @@ router.post("/proposition", (req, res) => {
                   addressLongitude: longitude,
                   addressLatitude: latitude,
                 },
-                //MODIF 7 (ajout) -> Du coup en frontend faudra ajouter un input Ville. Pour récupérer cette donnée en backend et l'utiliser en frontend.
                 welcome_day,
                 reception_hours,
                 fiber_connection,
@@ -84,7 +83,7 @@ router.post("/proposition", (req, res) => {
                 dedicated_office,
                 other,
                 description,
-                home_photo, //MODIF URL
+                home_photo,
               });
               // Save nouvelle proposition
               newProposition.save().then((savedProposition) => {
@@ -95,9 +94,8 @@ router.post("/proposition", (req, res) => {
                   user._id,
                   { proposition: savedProposition._id } //Permet de modifier le document user en ajoutant un champs et une valeur
 
-                  // { new: true } //MODIF 9(ajout) Permet de mettre à jour le document user
+                // Permet de mettre à jour le document user
                 ).then(() => {
-                  // nouvelle proposition saved
                   res.json({
                     result: true,
                     proposition: savedProposition,
@@ -144,7 +142,7 @@ router.post("/searchInProximity", (req, res) => {
     .catch((error) => res.status(500).json({ result: false, error: error.message }));
 });
 
-
+// Charger une photo
 router.post("/upload", async (req, res) => {
   // Vérifie que req.files contient bien les fichiers attendus
   if (!req.files || !req.files.photoFromFront) {
@@ -172,7 +170,6 @@ router.post("/upload", async (req, res) => {
     fs.unlinkSync(photoPath);
   }
 });
-
 
 // Route pour recuperer les annonces de l'utilisateur
 router.get("/proposition/:token", (req, res) => {
@@ -212,7 +209,6 @@ router.delete("/proposition/:id", async (req, res) => {
 });
 
 //Route GET pour rechercher les Remoters d'une ville
-
 router.get("/search/:city", (req, res) => {
   Proposition.find({
     "main_address.city": { $regex: new RegExp(req.params.city, "i") },
@@ -220,7 +216,6 @@ router.get("/search/:city", (req, res) => {
     .populate("user")
     .then((data) => {
       if (data.length > 0) {
-        // Pour vérifier si des données ont été trouvées
         res.json({
           result: true,
           propositionData: data,
