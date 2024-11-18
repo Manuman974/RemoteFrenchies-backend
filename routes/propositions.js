@@ -6,9 +6,8 @@ const Proposition = require("../models/proposition");
 const uniqid = require("uniqid");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const os = require('os'); // Import os for tmp directory
+const os = require("os"); // Import os for tmp directory
 const geolib = require("geolib"); // Assurez-vous d'avoir installé geolib
-
 
 router.post("/proposition", (req, res) => {
   // Destructuration du code
@@ -29,7 +28,6 @@ router.post("/proposition", (req, res) => {
     if (!user) {
       return res.json({ result: false, error: "User not found" });
     } else {
-
       // Vérifier si une proposition avec les mêmes détails existe déjà pour l'utilisateur
       Proposition.findOne({
         main_address,
@@ -45,7 +43,6 @@ router.post("/proposition", (req, res) => {
           // erreur si proposition existante
           res.json({ result: false, error: "Proposition already exists" });
         } else {
-
           //FETCH POUR RECUPERER LES COORDONNEES ADRESSES
           //encodeURI permet d'ajouter des caractères spéciaux à une chaîne de caractères pour que les paramètres puissent être lus par l'API quand elle attend des caractères spéciaux entre mot par exemple
           fetch(
@@ -55,7 +52,6 @@ router.post("/proposition", (req, res) => {
           )
             .then((response) => response.json())
             .then((data) => {
-
               const latitude = data.features[0].geometry.coordinates[1];
 
               const longitude = data.features[0].geometry.coordinates[0];
@@ -87,14 +83,13 @@ router.post("/proposition", (req, res) => {
               });
               // Save nouvelle proposition
               newProposition.save().then((savedProposition) => {
-  
                 // Mettre à jour le champ de proposition de l'utilisateur avec l'ID de la nouvelle proposition
 
                 User.findByIdAndUpdate(
                   user._id,
                   { proposition: savedProposition._id } //Permet de modifier le document user en ajoutant un champs et une valeur
 
-                // Permet de mettre à jour le document user
+                  // Permet de mettre à jour le document user
                 ).then(() => {
                   res.json({
                     result: true,
@@ -109,13 +104,18 @@ router.post("/proposition", (req, res) => {
   });
 });
 
-// Route POST pour rechercher les Remoters dans un périmètre donné
+// Route POST pour rechercher les Remoters dans un périmètre donné.
 router.post("/searchInProximity", (req, res) => {
   const { latitude, longitude, radius } = req.body;
 
   // Vérification des paramètres
   if (!latitude || !longitude || !radius) {
-    return res.status(400).json({ result: false, error: "Latitude, longitude and radius are required" });
+    return res
+      .status(400)
+      .json({
+        result: false,
+        error: "Latitude, longitude and radius are required",
+      });
   }
 
   Proposition.find()
@@ -123,7 +123,10 @@ router.post("/searchInProximity", (req, res) => {
       // Filtrer les propositions selon la distance
       const nearbyPropositions = propositions.filter((proposition) => {
         const distance = geolib.getDistance(
-          { latitude: proposition.main_address.addressLatitude, longitude: proposition.main_address.addressLongitude },
+          {
+            latitude: proposition.main_address.addressLatitude,
+            longitude: proposition.main_address.addressLongitude,
+          },
           { latitude, longitude }
         );
         return distance <= radius; // Comparer la distance au rayon
@@ -136,10 +139,15 @@ router.post("/searchInProximity", (req, res) => {
           message: "Remoters found within proximity",
         });
       } else {
-        res.json({ result: false, error: "No remoters found within the specified radius" });
+        res.json({
+          result: false,
+          error: "No remoters found within the specified radius",
+        });
       }
     })
-    .catch((error) => res.status(500).json({ result: false, error: error.message }));
+    .catch((error) =>
+      res.status(500).json({ result: false, error: error.message })
+    );
 });
 
 // Charger une photo
@@ -159,12 +167,17 @@ router.post("/upload", async (req, res) => {
 
     // Télécharge l'image sur Cloudinary
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-    
+
     // Envoie l'URL Cloudinary en réponse
     res.json({ result: true, url: resultCloudinary.secure_url });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ result: false, error: "Erreur lors du téléchargement Cloudinary" });
+    res
+      .status(500)
+      .json({
+        result: false,
+        error: "Erreur lors du téléchargement Cloudinary",
+      });
   } finally {
     // Supprime le fichier temporaire après utilisation
     fs.unlinkSync(photoPath);
@@ -185,7 +198,9 @@ router.get("/proposition/:token", (req, res) => {
           res.json({ result: false, error: "No propositions found" });
         }
       })
-      .catch((error) => res.status(500).json({ result: false, error: error.message }));
+      .catch((error) =>
+        res.status(500).json({ result: false, error: error.message })
+      );
   });
 });
 
@@ -195,17 +210,21 @@ router.delete("/proposition/:id", async (req, res) => {
     const propositionId = req.params.id;
     console.log("ID de l'annonce à supprimer :", propositionId);
 
-    const deletedProposition = await Proposition.findByIdAndDelete(propositionId);
+    const deletedProposition = await Proposition.findByIdAndDelete(
+      propositionId
+    );
 
     if (!deletedProposition) {
-        return res.status(404).json({ result: false, error: "Proposition not found" });
+      return res
+        .status(404)
+        .json({ result: false, error: "Proposition not found" });
     }
 
     res.json({ result: true, message: "Proposition deleted successfully" });
-} catch (error) {
+  } catch (error) {
     console.error(error); // Log de l'erreur pour faciliter le débogage
     res.status(500).json({ result: false, error: "Internal server error" });
-}
+  }
 });
 
 //Route GET pour rechercher les Remoters d'une ville
