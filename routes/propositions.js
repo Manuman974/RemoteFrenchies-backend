@@ -7,7 +7,7 @@ const uniqid = require("uniqid");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const os = require("os"); // Import os for tmp directory
-const geolib = require("geolib"); // Assurez-vous d'avoir installé geolib
+const geolib = require("geolib"); // Assurez-vous d'avoir installé geolib.
 
 router.post("/proposition", (req, res) => {
   // Destructuration du code
@@ -110,12 +110,10 @@ router.post("/searchInProximity", (req, res) => {
 
   // Vérification des paramètres
   if (!latitude || !longitude || !radius) {
-    return res
-      .status(400)
-      .json({
-        result: false,
-        error: "Latitude, longitude and radius are required",
-      });
+    return res.status(400).json({
+      result: false,
+      error: "Latitude, longitude and radius are required",
+    });
   }
 
   Proposition.find()
@@ -172,12 +170,10 @@ router.post("/upload", async (req, res) => {
     res.json({ result: true, url: resultCloudinary.secure_url });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        result: false,
-        error: "Erreur lors du téléchargement Cloudinary",
-      });
+    res.status(500).json({
+      result: false,
+      error: "Erreur lors du téléchargement Cloudinary",
+    });
   } finally {
     // Supprime le fichier temporaire après utilisation
     fs.unlinkSync(photoPath);
